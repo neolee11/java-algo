@@ -8,4 +8,5 @@ public class util {
             System.out.print(arr[i] + " ");
         }
     }
+
 }
