@@ -1,0 +1,333 @@
+Java Collections:
+ Array sort
+ Collection sort, Iterator
+
+ List: ArrayList (common), LinkedList
+
+ Set: HashSet, EnumSet
+ SortedSet / NavigableSet: TreeSet
+
+ Queue: ArrayDeque
+ Deque: ArrayDeque, PriorityQueue, LinkedList (should use ArrayDeque instead)
+ Stack: Stack (deprecated, should use ArrayDeque instead)
+
+ Map: HashMap, LinkedHashMap, EnumMap
+ SortedMap: TreeMap
+ 
+Dynamic Programming
+https://www.youtube.com/watch?v=eLQzAKMWY8U&t=4595s
+
+DP Question Types:
+1. 矩阵坐标型 (walk from top left corner to bottom right corner, pascal triangle)
+2. 序列型
+	a. 单序列 (LIS - Long increase subsequence)
+	b. 双序列 (Long common subsequence, Edit distance)
+3. knapsack变种
+4. 区间型及其他
+
+Top down DP (with memoization)
+
+	int[][] dp = new int[n+1][m+1];//dp array
+	int recursion_func(arr[], i, j){
+		//base condition
+		//return dp lookup if set
+
+		int best = dp_recurrence_function (recursion_func(...))
+		dp[i][j] = best;
+		return best;
+	}
+
+DP bottom up (no recursion)
+
+    int dp_function(int n){
+        int[] dp = new int[n+1];
+        // do some initlization base on states or requirements
+        for(int i = 1 to n){
+            dp[i] = dp[i] + dp[j] //some previous lookup
+            dp[i] = best(dp[i], dp_recurrence_function);
+        }
+
+        return dp[n];
+    } 
+
+
+Tree Questions
+Tree traversal
+DFS: preorder (root, left, right), inorder (left, root, right), postorder (left, right, root)
+BFS: level order
+
+Implementation: recursion, iteration
+			Preorder	Inorder		Postorder	Level order
+recursion:	DFS			DFS			DFS			DFS （特殊）
+Iteration:	Stack		Stack		Stack		BFS (Queue)
+
+做Tree题思路
+step 1: 用哪一种遍历方式 (4种)？
+step 2: 用哪一种实现方式 （2种）？
+step 3: 套模板 （4种）
+
+
+模板
+			特点					实现
+Preorder	通用解法					DFS
+Inorder		BST						DFS & Stack
+Postorder	子模块（left, right)		DFS
+Level Order	层扫					BFS
+
+Preorder 模板
+- 通用解法
+public static void helper(List<Integer> res, TreeNode root) {
+	if(root == null) return;
+	
+	// 操作
+	// 终止条件
+	
+	helper(res, root.left);
+	helper(res, root.right);
+}
+
+public static List<Integer> preoder_traversal_iterative(Tree root) {
+	List<Integer> res = new ArrayList<>();
+	if (root == null) return res;
+	Stack<TreeNode> stack = new Stack<>();
+	stack.push(root);
+	if(!stack.isEmpty()){
+		TreeNode curr = stack.pop();
+		if(curr.right != null) stack.push(curr.right);
+		if(curr.left != null) stack.push(curr.left);
+		res.add(curr.val);
+	}
+	return res;
+}
+
+- 双Preorder (无helper, not really preorder, but more like divide and conquer)
+public static boolean hasPathSum(TreeNode root, int sum) {
+	if(root == null) return false;
+	if(root.left == null && root.right == null) {
+		return sum == root.val;
+	) 
+	
+	return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+}
+
+Inorder 模板
+一般BST题，用Inorder, 但也可能是 DFS & Stack(综合）， inorder & preorder
+题中有顺序，用inorder
+
+//Inorder recursive
+public static void helper(List<Integer> res, TreeNode root) {
+	if(root == null) return;
+	
+	helper(res, root.left);
+	// 操作			
+	helper(res, root.right);
+}
+
+//Inorder iterative
+public static List<Integer> inorder_iterative(TreeNode root){
+	List<Integer> res = new ArrayList<>();
+	if(root == null) return res;
+	Stack<TreeNode> stack = new Stack<>();
+	TreeNode curr = root;
+	while(curr != null || !stack.isEmpty()){
+		while(curr != null){
+			stack.push(curr);
+			curr = curr.left;
+		}
+		curr =stack.pop();
+		res.add(curr.val);
+		curr = curr.right;
+	}
+	return res;
+)
+
+
+Postorder 模板
+子模块， 层数
+
+//Postorder recursive
+// 结果 （可能是一个全局的结果）
+ public <T> helper(TreeNode root) {
+	if(root == null) return 0;
+	<T> l = helper(root.left);
+	<T> r = helper(root.right); //+ 1
+	
+	// 操作	
+	return 结果 //（l, r);
+}
+
+// Postorder iterative
+public static List<Integer> postorder_iterative(TreeNode root) {
+	LinkedList<Integer> res = new LinkedList<>();
+	if(root == null) return res;
+	Stack<TreeNode> stack = new Stack<>();
+	stack.push(root);
+	while(!stack.isEmpty()){
+		TreeNode curr = stack.pop();
+		res.addFirst(curr.val); //that's reason to use LinkedList, to append to front
+		if(curr.left != null) stack.push(curr.left);
+		if(curr.right != null) stack.push(curr.right);
+	}
+	return res;
+}
+
+Level Order 模板
+层扫
+Size: control the number of nodes on each level
+
+BFS implementaion
+public static List<List<Integer>> levelOrder(TreeNode root){
+
+	List<List<Integer>> res = new ArrayList<>();
+	if (root == null) return res;
+	
+	Queue<TreeNode> queue = new ListedList<>();
+	queue.offer(root);
+	
+	while(!queue.isEmpty()) {
+		int sizes = queue.size(); //to mark the level end
+		List<Integer> list = new ArrayList<>();
+		
+		for(int i = 0; i < size; i++){
+			TreeNode curr = queue.poll();
+			if(curr.left != null) queue.offer(curr.left);
+			if(curr.right != null) queue.offer(curr.right);
+			list.add(curr.val);
+		}
+		res.add(list);
+	}
+	
+	return res;
+}
+
+DFS Implementation (DFS 实现 BFS)
+public static List<List<Integer>> levelOrder_recursive(TreeNode root){
+	List<List<Integer>> res = new ArrayList<>();
+	if (root == null) return res;
+	helper(res, root, 0);
+	return res;
+}
+
+public static void helper(List<List<Integer>> res, TreeNode root, int level){
+	if(root == null) return;
+	
+	if(level >= res.size()){
+		res.add(new ArrayList<>());
+	}
+	
+	res.get(level).add(root.val); // 操作	
+	helper(res, root.left, level + 1);
+	helper(res, root.right, level + 1);
+}
+
+综合
+DFS - Backtracking (结合)
+Binary Search
+Graph - Union Find
+DP
+
+
+Binary Search
+1. Target only exist in nums[] once
+int binarySearch(int[] nums, int target) {
+	int low = 0;
+	int high = nums.length - 1;
+	while (low <= high) {
+		int mid = low + (high - low) / 2;
+		if (nums[mid] == target) {
+			return mid;
+		}
+		if (nums[mid] > target) {
+			high = mid - 1;
+		} else {
+			low = mid + 1;
+		}
+	}
+	return -1;
+}
+
+2. Target exists in nums[] multiple times, and return the min index
+int binarySearchMinIdx(int[] nums, int target) {
+	int low = 0, high = nums.length - 1;
+	int mid;
+	while (low < high) {
+		mid = low + (high - low) / 2;
+		//注意，由于是返回索引值最小的，所以这里r=mid，而不是mid-1，因为mid也有可能是最终的结果。
+		if (target <= nums[mid])
+			high = mid;
+		else
+			low = mid + 1;
+	}
+	
+	//while条件结束时,low==high,因此判断a[l]是否=t即可
+	if (nums[low] == target)
+		return low;
+	else
+		return -1;
+}
+
+3. Find the largest index where nums[low] <= target (solve leetcode 35. Search Insert Position)
+int binarySearchSmallOrSmaller(int[] nums, int target) {
+	int low = 0, high = nums.length - 1;
+	int mid;
+	while (low <= high) {
+		mid = low + (high - low) / 2;
+		if (nums[mid] < target)
+			low = mid + 1;
+		else
+			high = mid - 1;
+	}
+	
+	// (1) At this point, low > high. That is, low >= high+1
+	// (2) From the invariant, we know that the index is between [low, high+1], so low <= high+1. Follwing from (1), now we know low == high+1.
+	// (3) Following from (2), the index is between [low, high+1] = [low, low], which means that low is the desired index
+	//     Therefore, we return low as the answer. You can also return high+1 as the result, since low == high+1        
+	return low;
+}
+
+4. Find the smallest index where nums[high] >= target 
+int binarySearchLargeOrLarger(int[] nums, int target) {
+	int low = 0, high = nums.length - 1;
+	int mid = 0;
+	while (low <= high) {                
+		mid = low + (high - low) / 2;        
+		if (nums[mid] >= target)
+			high = mid - 1;
+		else
+			low = mid + 1;
+	}
+	return high;
+}
+
+Matrix
+A common method to solve the image rotation problems
+/*
+ * clockwise rotate
+ * first reverse up to down, then swap the symmetry 
+ * 1 2 3     7 8 9     7 4 1
+ * 4 5 6  => 4 5 6  => 8 5 2
+ * 7 8 9     1 2 3     9 6 3
+*/
+void rotate(vector<vector<int> > &matrix) {
+    reverse(matrix.begin(), matrix.end());
+	
+    for (int i = 0; i < matrix.size(); ++i) {
+        for (int j = i + 1; j < matrix[i].size(); ++j)
+            swap(matrix[i][j], matrix[j][i]);
+    }
+}
+
+/*
+ * anticlockwise rotate
+ * first reverse left to right, then swap the symmetry
+ * 1 2 3     3 2 1     3 6 9
+ * 4 5 6  => 6 5 4  => 2 5 8
+ * 7 8 9     9 8 7     1 4 7
+*/
+void anti_rotate(vector<vector<int> > &matrix) {
+    for (auto vi : matrix) reverse(vi.begin(), vi.end());
+    for (int i = 0; i < matrix.size(); ++i) {
+        for (int j = i + 1; j < matrix[i].size(); ++j)
+            swap(matrix[i][j], matrix[j][i]);
+    }
+}
